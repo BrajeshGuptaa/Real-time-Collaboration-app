@@ -14,3 +14,12 @@ class TextCRDT:
         op = {"type": "insert", "index": index, "text": text}
         self._ops.append(op)
         return op
+
+    def local_delete(self, index: int, length: int) -> dict:
+        before = self.text[:index]
+        removed = self.text[index:index + length]
+        after = self.text[index + length:]
+        self.text = before + after
+        op = {"type": "delete", "index": index, "length": length, "removed": removed}
+        self._ops.append(op)
+        return op
