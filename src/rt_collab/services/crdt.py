@@ -23,3 +23,10 @@ class TextCRDT:
         op = {"type": "delete", "index": index, "length": length, "removed": removed}
         self._ops.append(op)
         return op
+
+    def apply(self, op: dict) -> None:
+        t = op.get("type")
+        if t == "insert":
+            self.local_insert(int(op["index"]), str(op["text"]))
+        elif t == "delete":
+            self.local_delete(int(op["index"]), int(op["length"]))
