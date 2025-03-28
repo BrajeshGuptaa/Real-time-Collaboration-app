@@ -24,3 +24,13 @@ class InMemoryDocStore:
         doc.crdt.apply(op)
         doc.version += 1
         return doc.version
+
+    async def snapshot_text(self, doc_id: uuid.UUID) -> tuple[str, int]:
+        doc = await self.get_or_create(doc_id)
+        return doc.crdt.to_string(), doc.version
+
+    async def local_insert(self, doc_id: uuid.UUID, index: int, text: str) -> tuple[dict, int, str]:
+        doc = await self.get_or_create(doc_id)
+        op = doc.crdt.local_insert(index, text)
+        doc.version += 1
+        return op, doc.version, doc.crdt.to_string()
