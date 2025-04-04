@@ -3,7 +3,10 @@ import uuid
 from fastapi import APIRouter
 from pydantic import BaseModel
 
+from rt_collab.services.docs import InMemoryDocStore
+
 router = APIRouter(prefix="/v1")
+store = InMemoryDocStore()
 
 
 class CreateDocRequest(BaseModel):
@@ -17,7 +20,9 @@ class CreateDocResponse(BaseModel):
 
 @router.post("/docs", response_model=CreateDocResponse)
 async def create_doc(req: CreateDocRequest) -> CreateDocResponse:
-    return CreateDocResponse(id=uuid.uuid4(), title=req.title)
+    doc_id = uuid.uuid4()
+    await store.get_or_create(doc_id)
+    return CreateDocResponse(id=doc_id, title=req.title)
 
 
 class GetDocResponse(BaseModel):
@@ -28,4 +33,5 @@ class GetDocResponse(BaseModel):
 
 @router.get("/docs/{doc_id}", response_model=GetDocResponse)
 async def get_doc(doc_id: uuid.UUID) -> GetDocResponse:
-    return GetDocResponse(id=doc_id, text="", version=0)
+    doc = await store.get_or_create(doc_id)
+    return GetDocResponse(id=doc_id, text=doc.crdt.to_string(), version=doc.version)
