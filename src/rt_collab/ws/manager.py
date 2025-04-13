@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import json
 import uuid
@@ -32,8 +34,13 @@ class ConnectionManager:
             try:
                 await ws.send_text(json.dumps(message))
             except Exception:
+                # Best-effort, drop broken connections
                 try:
                     await ws.close()
                 except Exception:
                     pass
                 await self.disconnect(doc_id, ws)
+
+
+manager = ConnectionManager()
+
