@@ -6,15 +6,30 @@
   const docIdInput = $("docId");
   const btnCreate = $("btnCreate");
   const btnConnect = $("btnConnect");
+  const statusPill = $("status");
+  const statusText = $("statusText");
+  const activeDoc = $("activeDoc");
+  const endpoint = $("endpoint");
 
   let ws = null;
   let suppressLocal = false;
   let lastText = "";
 
-  function setStatus(t) { status.textContent = t; }
+  function setStatus(state, text) {
+    statusText.textContent = text || state;
+    statusPill.classList.remove("status-connected", "status-connecting");
+    if (state === "connected") statusPill.classList.add("status-connected");
+    else if (state === "connecting") statusPill.classList.add("status-connecting");
+  }
   function addLog(obj) {
     const line = document.createElement("div");
-    line.textContent = `[${new Date().toLocaleTimeString()}] ${typeof obj === 'string' ? obj : JSON.stringify(obj)}`;
+    const ts = document.createElement("span");
+    ts.className = "time";
+    ts.textContent = new Date().toLocaleTimeString();
+    const msg = document.createElement("span");
+    msg.textContent = typeof obj === "string" ? obj : JSON.stringify(obj);
+    line.appendChild(ts);
+    line.appendChild(msg);
     log.appendChild(line);
     log.scrollTop = log.scrollHeight;
   }
@@ -36,9 +51,9 @@
     if (ws) { ws.close(); ws = null; }
     const url = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/v1/ws/docs/${docId}`;
     ws = new WebSocket(url);
-    setStatus("connecting...");
-    ws.onopen = () => setStatus("connected");
-    ws.onclose = () => setStatus("disconnected");
+    setStatus("connecting", "Connecting...");
+    ws.onopen = () => setStatus("connected", "Connected");
+    ws.onclose = () => setStatus("disconnected", "Disconnected");
     ws.onerror = (e) => addLog({ error: 'ws', details: e });
     ws.onmessage = (ev) => {
       let data;
@@ -73,6 +88,7 @@
       const res = await fetch('/v1/docs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: 'Untitled' }) });
       const data = await res.json();
       docIdInput.value = data.id;
+      activeDoc.textContent = data.id;
       addLog({ create: data });
     } catch (e) {
       addLog({ error: 'create_failed', details: String(e) });
@@ -82,6 +98,7 @@
   btnConnect.onclick = () => {
     const docId = (docIdInput.value || '').trim();
     if (!docId) { alert('Enter a document ID or click Create'); return; }
+    activeDoc.textContent = docId;
     connect(docId);
   };
 
@@ -110,5 +127,7 @@
 
     lastText = newText; // optimistic
   });
-})();
 
+  // Show endpoint info on load
+  endpoint.textContent = `Target: ${location.origin}`;
+})();

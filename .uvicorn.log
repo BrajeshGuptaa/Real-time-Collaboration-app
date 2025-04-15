@@ -1,0 +1,28 @@
+INFO:     Will watch for changes in these directories: ['/Users/brajesh.kumar/Desktop/backend app/app']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [13622] using WatchFiles
+INFO:     Started server process [13626]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:50049 - "HEAD /healthz HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:50053 - "GET /healthz HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50059 - "GET / HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:50059 - "GET /ui/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50059 - "GET /ui/main.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50059 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50060 - "GET /healthz HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50078 - "POST /v1/docs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50102 - "WebSocket /v1/ws/docs/14f4adee-3052-41cd-b845-1e7ee33a1a39" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:50105 - "WebSocket /v1/ws/docs/14f4adee-3052-41cd-b845-1e7ee33a1a39" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     connection closed
+INFO:     127.0.0.1:50570 - "POST /v1/docs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50804 - "HEAD /ui/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50864 - "HEAD /ui/ HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [13626]
+INFO:     Stopping reloader process [13622]
