@@ -9,6 +9,8 @@ from fastapi.responses import RedirectResponse
 from starlette.staticfiles import StaticFiles
 from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
 
 from rt_collab.api.routes import router as api_router
 from rt_collab.core.config import get_settings
@@ -26,6 +28,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def add_request_id(request: Request, call_next) -> Response:
+    # Simple tracing hook to correlate requests and downstream async jobs
+    request_id = request.headers.get("x-request-id") or str(uuid.uuid4())
+    request.state.request_id = request_id
+    response = await call_next(request)
+    response.headers["x-request-id"] = request_id
+    return response
 
 
 @app.get("/healthz")
