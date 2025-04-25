@@ -3,10 +3,13 @@ from __future__ import annotations
 import asyncio
 import heapq
 import random
+import time
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any, Awaitable, Callable, Dict, Optional
+
+from rt_collab.core.metrics import QueueMetrics
 
 
 class RetryableError(Exception):
@@ -69,6 +72,7 @@ class TaskQueue:
         self._worker: asyncio.Task | None = None
         self._lock = asyncio.Lock()
         self._stopped = False
+        self.metrics = QueueMetrics()
 
     def register_handler(self, job_type: str, handler: Handler) -> None:
         self._handlers[job_type] = handler
@@ -90,6 +94,7 @@ class TaskQueue:
             if idempotency_key:
                 self._idempotency[idempotency_key] = job_id
             heapq.heappush(self._pending, (job.next_run_at.timestamp(), job.id))
+            self.metrics.record_status(JobStatus.queued)
             self._wake.set()
             return job
 
@@ -141,23 +146,30 @@ class TaskQueue:
             job.mark_dead("no_handler")
             return
         job.mark_running()
+        self.metrics.record_status(JobStatus.running)
+        start_ms = time.perf_counter() * 1000
         try:
             result = await handler(job.payload)
             job.mark_complete(result)
+            self.metrics.record_status(JobStatus.succeeded)
+            self.metrics.record_latency(time.perf_counter() * 1000 - start_ms)
         except RetryableError as exc:
             job.attempts += 1
             if job.attempts >= job.max_attempts:
                 job.mark_dead(str(exc))
+                self.metrics.record_status(JobStatus.dead)
                 return
             delay = self._backoff(job.attempts)
             job.status = JobStatus.queued
             job.next_run_at = datetime.utcnow() + timedelta(seconds=delay)
             job.updated_at = datetime.utcnow()
+            self.metrics.record_retry()
             async with self._lock:
                 heapq.heappush(self._pending, (job.next_run_at.timestamp(), job.id))
                 self._wake.set()
         except Exception as exc:  # pragma: no cover - debug aid
             job.mark_dead(str(exc))
+            self.metrics.record_status(JobStatus.dead)
 
     def _backoff(self, attempt: int) -> float:
         base = 2 ** (attempt - 1)
