@@ -15,6 +15,7 @@ from starlette.responses import Response
 from rt_collab.api.routes import router as api_router
 from rt_collab.core.config import get_settings
 from rt_collab.services.docs import store
+from rt_collab.services.task_queue import task_queue
 from rt_collab.ws.manager import manager
 
 
@@ -48,6 +49,37 @@ async def healthz() -> Dict[str, Any]:
 @app.get("/readyz")
 async def readyz() -> Dict[str, Any]:
     return {"status": "ready"}
+
+
+@app.on_event("startup")
+async def startup_events() -> None:
+    await task_queue.start()
+
+
+@app.on_event("shutdown")
+async def shutdown_events() -> None:
+    await task_queue.stop()
+
+
+@app.get("/metrics")
+async def metrics() -> Response:
+    summary = task_queue.metrics.summary()
+    lines = [
+        "# HELP queue_jobs_total Total jobs processed by status",
+        "# TYPE queue_jobs_total counter",
+    ]
+    for status, count in summary.items():
+        if status in {"retries", "p95_latency_ms"}:
+            continue
+        lines.append(f'queue_jobs_total{{status="{status}"}} {count}')
+    lines.append("# HELP queue_job_latency_p95_ms 95th percentile latency in ms")
+    lines.append("# TYPE queue_job_latency_p95_ms gauge")
+    lines.append(f'queue_job_latency_p95_ms {summary.get("p95_latency_ms", 0.0)}')
+    lines.append("# HELP queue_retries_total Retry attempts recorded")
+    lines.append("# TYPE queue_retries_total counter")
+    lines.append(f'queue_retries_total {summary.get("retries", 0)}')
+    body = "\n".join(lines) + "\n"
+    return Response(content=body, media_type="text/plain")
 
 
 app.include_router(api_router)
