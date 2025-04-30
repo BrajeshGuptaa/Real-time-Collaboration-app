@@ -13,8 +13,10 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 from rt_collab.api.routes import router as api_router
+from rt_collab.api.jobs import router as jobs_router
 from rt_collab.core.config import get_settings
 from rt_collab.services.docs import store
+from rt_collab.services.job_handlers import register_default_handlers
 from rt_collab.services.task_queue import task_queue
 from rt_collab.ws.manager import manager
 
@@ -53,6 +55,7 @@ async def readyz() -> Dict[str, Any]:
 
 @app.on_event("startup")
 async def startup_events() -> None:
+    register_default_handlers(task_queue)
     await task_queue.start()
 
 
@@ -83,6 +86,7 @@ async def metrics() -> Response:
 
 
 app.include_router(api_router)
+app.include_router(jobs_router)
 
 
 @app.websocket("/v1/ws/docs/{doc_id}")
