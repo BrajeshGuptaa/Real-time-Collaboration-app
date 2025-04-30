@@ -75,5 +75,9 @@ class InMemoryDocStore:
         async with self._lock:
             self._docs = {}
 
+    async def list_doc_ids(self) -> list[uuid.UUID]:
+        async with self._lock:
+            return list(self._docs.keys())
+
 
 store = InMemoryDocStore()
