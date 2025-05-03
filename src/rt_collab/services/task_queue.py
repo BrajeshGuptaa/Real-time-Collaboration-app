@@ -32,6 +32,7 @@ class Job:
     id: uuid.UUID
     type: str
     payload: Dict[str, Any]
+    request_id: str | None = None
     status: str = JobStatus.queued
     attempts: int = 0
     max_attempts: int = 3
@@ -77,7 +78,15 @@ class TaskQueue:
     def register_handler(self, job_type: str, handler: Handler) -> None:
         self._handlers[job_type] = handler
 
-    async def enqueue(self, job_type: str, payload: Dict[str, Any], *, idempotency_key: str | None = None, max_attempts: int = 3) -> Job:
+    async def enqueue(
+        self,
+        job_type: str,
+        payload: Dict[str, Any],
+        *,
+        idempotency_key: str | None = None,
+        max_attempts: int = 3,
+        request_id: str | None = None,
+    ) -> Job:
         async with self._lock:
             if idempotency_key and idempotency_key in self._idempotency:
                 return self._jobs[self._idempotency[idempotency_key]]
@@ -89,6 +98,7 @@ class TaskQueue:
                 payload=payload,
                 max_attempts=max_attempts,
                 idempotency_key=idempotency_key,
+                request_id=request_id,
             )
             self._jobs[job_id] = job
             if idempotency_key:
@@ -168,8 +178,8 @@ class TaskQueue:
                 heapq.heappush(self._pending, (job.next_run_at.timestamp(), job.id))
                 self._wake.set()
         except Exception as exc:  # pragma: no cover - debug aid
-            job.mark_dead(str(exc))
-            self.metrics.record_status(JobStatus.dead)
+            job.mark_failed(str(exc))
+            self.metrics.record_status(JobStatus.failed)
 
     def _backoff(self, attempt: int) -> float:
         base = 2 ** (attempt - 1)
