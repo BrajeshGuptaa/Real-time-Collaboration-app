@@ -78,3 +78,11 @@ async def get_job(job_id: uuid.UUID) -> Any:
     if not job:
         raise HTTPException(status_code=404, detail="not_found")
     return _serialize_job(job)
+
+
+@router.get("/jobs", response_model=list[JobResponse])
+async def list_jobs(status: str | None = None) -> Any:
+    jobs = list(task_queue.all_jobs().values())
+    if status:
+        jobs = [j for j in jobs if j.status == status]
+    return [_serialize_job(j) for j in jobs]
