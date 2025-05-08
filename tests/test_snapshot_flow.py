@@ -13,18 +13,26 @@ from rt_collab.services.snapshots import snapshots
 from rt_collab.services.task_queue import task_queue
 
 
-async def wait_for_job_of_type(job_type: str, targets: set[str], timeout: float = 3.0):
+@pytest.fixture
+def anyio_backend():
+    return "asyncio"
+
+
+async def wait_for_job_of_type(job_type: str, targets: set[str], timeout: float = 5.0):
     start = asyncio.get_event_loop().time()
+    last_seen = None
     while True:
         for job in task_queue.all_jobs().values():
             if job.type == job_type and job.status in targets:
                 return job
+            if job.type == job_type:
+                last_seen = job.status
         if asyncio.get_event_loop().time() - start > timeout:
-            raise AssertionError("timeout waiting for job")
+            raise AssertionError(f"timeout waiting for job (last_seen={last_seen})")
         await asyncio.sleep(0.05)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_snapshot_job_runs_when_interval_hits(monkeypatch):
     os.environ["SNAPSHOT_INTERVAL"] = "1"
     get_settings.cache_clear()

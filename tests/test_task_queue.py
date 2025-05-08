@@ -7,6 +7,11 @@ import pytest
 from rt_collab.services.task_queue import RetryableError, TaskQueue
 
 
+@pytest.fixture
+def anyio_backend():
+    return "asyncio"
+
+
 async def wait_for_status(queue: TaskQueue, job_id, targets: set[str], timeout: float = 3.0):
     start = asyncio.get_event_loop().time()
     while True:
@@ -18,7 +23,7 @@ async def wait_for_status(queue: TaskQueue, job_id, targets: set[str], timeout: 
         await asyncio.sleep(0.05)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_retry_and_dlq():
     queue = TaskQueue()
     attempts = {"count": 0}
@@ -38,7 +43,7 @@ async def test_retry_and_dlq():
     assert finished.status == "dead"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_idempotent_enqueue_reuses_job():
     queue = TaskQueue()
 
