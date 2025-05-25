@@ -15,7 +15,7 @@ Real-time document editing with asynchronous background orchestration. It keeps 
 
 ## Quick start (hosted app, compose for DBs)
 ```bash
-cd app
+cd "Real-Time-Collaboration App"
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -24,7 +24,7 @@ pip install -r requirements.txt
 docker compose up -d mysql redis
 
 # Run API with reload
-PYTHONPATH=app/src uvicorn rt_collab.main:app --reload
+PYTHONPATH=src uvicorn rt_collab.main:app --reload
 ```
 - API docs: http://localhost:8000/docs  
 - Demo UI: http://localhost:8000/ui/ (served from `web/`)
@@ -32,7 +32,7 @@ PYTHONPATH=app/src uvicorn rt_collab.main:app --reload
 Stop services: `docker compose down` (data persists via the `mysqldata` volume).
 
 ## Run everything with Docker Compose
-From `app/`:
+From `Real-Time-Collaboration App/`:
 ```bash
 docker compose up --build
 ```
@@ -98,7 +98,7 @@ Example flow:
 
 ## Testing
 ```bash
-cd app
+cd "Real-Time-Collaboration App"
 source .venv/bin/activate
 pytest
 ```

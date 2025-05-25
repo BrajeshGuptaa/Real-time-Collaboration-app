@@ -20,7 +20,6 @@ from rt_collab.services.job_handlers import register_default_handlers
 from rt_collab.services.task_queue import task_queue
 from rt_collab.ws.manager import manager
 
-
 settings = get_settings()
 
 app = FastAPI(title=settings.app_name, version=settings.app_version)
@@ -52,17 +51,14 @@ async def healthz() -> Dict[str, Any]:
 async def readyz() -> Dict[str, Any]:
     return {"status": "ready"}
 
-
 @app.on_event("startup")
 async def startup_events() -> None:
     register_default_handlers(task_queue)
     await task_queue.start()
 
-
 @app.on_event("shutdown")
 async def shutdown_events() -> None:
     await task_queue.stop()
-
 
 @app.get("/metrics")
 async def metrics() -> Response:

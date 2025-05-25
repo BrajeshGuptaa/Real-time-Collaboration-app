@@ -14,7 +14,6 @@ class Base(DeclarativeBase):
 class Document(Base):
     __tablename__ = "documents"
 
-    # Use String(36) for UUID compatibility across MySQL
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     title: Mapped[str] = mapped_column(String(255), nullable=False, default="Untitled")
     created_by: Mapped[str | None] = mapped_column(String(255), nullable=True)

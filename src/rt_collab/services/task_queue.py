@@ -122,7 +122,7 @@ class TaskQueue:
                 await self._worker
             except asyncio.CancelledError:
                 pass
-
+ 
     async def _run(self) -> None:
         while not self._stopped:
             job_id = await self._next_ready_job()

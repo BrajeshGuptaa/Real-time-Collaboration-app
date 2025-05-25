@@ -1,0 +1,129 @@
+e15e14c | 2025-11-25 19:13:14 +0530 | fix: hide how-to content and remove active doc row from ui
+5f8c481 | 2025-11-25 19:07:53 +0530 | fix: update ui cache bust and active doc state
+7d638cc | 2025-11-25 19:00:24 +0530 | fix: keep how-to toggle clickable and show active doc id
+3d24b4e | 2025-11-25 18:57:32 +0530 | feat: improve ui guidance and persistence
+2c7e049 | 2025-11-25 18:57:00 +0530 | chore: containerize app stack
+dd19bb1 | 2025-11-25 10:00:00 +0530 | test: stabilize async jobs
+146f023 | 2025-11-24 10:00:00 +0530 | feat: list queue jobs
+c7bcda0 | 2025-11-23 10:00:00 +0530 | docs: describe async suite
+edcc584 | 2025-11-22 10:00:00 +0530 | test: ensure snapshots queue
+8da42d3 | 2025-11-21 10:00:00 +0530 | test: cover queue retries
+a96b2bd | 2025-11-20 10:00:00 +0530 | feat: expose async exports
+a450920 | 2025-11-19 10:00:00 +0530 | feat: trace jobs with request ids
+b064d5b | 2025-11-18 10:00:00 +0530 | feat: auto enqueue snapshots
+23e9c0b | 2025-11-17 10:00:00 +0530 | feat: add job api
+10b1492 | 2025-11-16 10:00:00 +0530 | feat: add async job handlers
+ac34112 | 2025-11-15 10:00:00 +0530 | feat: add snapshot store
+b8906a9 | 2025-11-14 10:00:00 +0530 | feat: expose queue metrics
+14d5bc1 | 2025-11-13 10:00:00 +0530 | feat: record queue metrics
+60cc1ae | 2025-11-12 10:00:00 +0530 | feat: add task queue core
+8d96d03 | 2025-11-11 10:00:00 +0530 | feat: tag request ids
+1d366a6 | 2025-11-10 10:00:00 +0530 | feat: refresh demo surface
+75fe93e | 2025-11-09 10:00:00 +0530 | feat: add good ui
+1ef36fd | 2025-11-08 10:00:00 +0530 | feat: finalize realtime stack
+9c0f6fd | 2025-11-07 10:00:00 +0530 | feat: configure app from settings
+7aff00e | 2025-11-06 10:00:00 +0530 | feat: cache settings and load dotenv
+e5b9f0d | 2025-11-05 10:00:00 +0530 | feat: load settings from env
+fff71b4 | 2025-11-04 10:00:00 +0530 | feat: introduce settings model
+ea12f39 | 2025-11-03 10:00:00 +0530 | refactor: reuse singleton doc store
+ad9a63f | 2025-11-02 10:00:00 +0530 | feat: expose shared doc store
+be4b4bc | 2025-11-01 10:00:00 +0530 | feat: hook routes into doc store
+e0c58ad | 2025-10-31 10:00:00 +0530 | feat: add broadcast and cleanup
+15076a6 | 2025-10-30 10:00:00 +0530 | feat: start websocket connection manager
+517b1ce | 2025-10-29 10:00:00 +0530 | feat: support deletions in store
+f41e8dd | 2025-10-28 10:00:00 +0530 | feat: expose snapshots and inserts
+901afbf | 2025-10-27 10:00:00 +0530 | feat: apply ops via store
+c5b00b3 | 2025-10-26 10:00:00 +0530 | feat: introduce in-memory doc store
+4c51e31 | 2025-10-25 10:00:00 +0530 | feat: replay remote ops
+df17fe7 | 2025-10-24 10:00:00 +0530 | feat: support local deletes
+470f871 | 2025-10-23 10:00:00 +0530 | feat: allow local inserts
+2a09b95 | 2025-10-22 10:00:00 +0530 | feat: sketch text crdt
+f755666 | 2025-10-21 10:00:00 +0530 | chore: create services package
+6194005 | 2025-10-20 10:00:00 +0530 | feat: expose read doc endpoint
+f11f8fc | 2025-10-19 10:00:00 +0530 | feat: implement create doc endpoint
+9da8b91 | 2025-10-18 10:00:00 +0530 | feat: mount v1 api router
+1a07ce8 | 2025-10-17 10:00:00 +0530 | feat: stub api router
+12bbfbc | 2025-10-16 10:00:00 +0530 | feat: wire cors and readiness
+8147334 | 2025-10-15 10:00:00 +0530 | feat: boot fastapi app with health check
+399700c | 2025-10-14 10:00:00 +0530 | chore: create rt_collab package
+880b9d4 | 2025-10-13 10:00:00 +0530 | docs: document full env sample
+3b9138d | 2025-10-12 10:00:00 +0530 | chore: add service connection envs
+1f3aa62 | 2025-10-11 10:00:00 +0530 | chore: seed env defaults
+409feeb | 2025-10-10 10:00:00 +0530 | chore: add redis service
+c571998 | 2025-10-09 10:00:00 +0530 | chore: configure mysql credentials
+9fa9d0f | 2025-10-08 10:00:00 +0530 | chore: scaffold docker compose
+c5951ff | 2025-10-07 10:00:00 +0530 | test: include hypothesis
+fa5ff04 | 2025-10-06 10:00:00 +0530 | test: add pytest dependency
+a889dbb | 2025-10-05 10:00:00 +0530 | chore: add typing extensions
+82f8b0f | 2025-10-04 10:00:00 +0530 | chore: add ujson alternative
+6ac5950 | 2025-10-03 10:00:00 +0530 | chore: include orjson for fast responses
+e39301d | 2025-10-02 10:00:00 +0530 | chore: load env files with python-dotenv
+b07fa2b | 2025-10-01 10:00:00 +0530 | chore: pull in redis client
+8a8d615 | 2025-09-30 10:00:00 +0530 | chore: add aiomysql driver
+47395f6 | 2025-09-29 10:00:00 +0530 | chore: include sqlalchemy async
+c63617b | 2025-09-28 10:00:00 +0530 | chore: add pydantic runtime
+e1a3135 | 2025-09-27 10:00:00 +0530 | chore: expand server dependencies
+5ac1056 | 2025-09-26 11:04:12 +0000 | test: stabilize async jobs
+936bc5d | 2025-09-26 11:04:12 +0000 | feat: list queue jobs
+f2ab947 | 2025-09-26 11:04:12 +0000 | docs: describe async suite
+d5cd19a | 2025-09-26 11:04:12 +0000 | test: ensure snapshots queue
+ce90068 | 2025-09-26 11:04:11 +0000 | test: cover queue retries
+d71256c | 2025-09-26 11:04:11 +0000 | feat: expose async exports
+2ddfbb1 | 2025-09-26 11:04:11 +0000 | feat: trace jobs with request ids
+f3ae915 | 2025-09-26 11:04:11 +0000 | feat: auto enqueue snapshots
+0d7ecbf | 2025-09-26 11:04:11 +0000 | feat: add job api
+169e11a | 2025-09-26 11:04:11 +0000 | feat: add async job handlers
+c8e1c9c | 2025-09-26 11:04:11 +0000 | feat: add snapshot store
+e7e4570 | 2025-09-26 11:04:10 +0000 | feat: expose queue metrics
+549dc8e | 2025-09-26 11:04:10 +0000 | feat: record queue metrics
+8f6fd8c | 2025-09-26 11:04:10 +0000 | feat: add task queue core
+59b15ea | 2025-09-26 11:04:10 +0000 | feat: tag request ids
+283b09d | 2025-09-26 11:04:10 +0000 | feat: refresh demo surface
+e8b4e06 | 2025-09-26 11:04:10 +0000 | feat: add good ui
+8b2e81c | 2025-09-26 11:04:10 +0000 | feat: finalize realtime stack
+8ab3c6b | 2025-09-26 11:04:10 +0000 | feat: configure app from settings
+b933bb1 | 2025-09-26 11:04:09 +0000 | feat: cache settings and load dotenv
+eab5220 | 2025-09-26 11:04:09 +0000 | feat: load settings from env
+46b0410 | 2025-09-26 11:04:09 +0000 | feat: introduce settings model
+a8dcd64 | 2025-09-26 11:04:09 +0000 | refactor: reuse singleton doc store
+a3fd178 | 2025-09-26 11:04:09 +0000 | feat: expose shared doc store
+d32a605 | 2025-09-26 11:04:09 +0000 | feat: hook routes into doc store
+3be105b | 2025-09-26 11:04:09 +0000 | feat: add broadcast and cleanup
+f4b624d | 2025-09-26 11:04:08 +0000 | feat: start websocket connection manager
+7e2ce3f | 2025-09-26 11:04:08 +0000 | feat: support deletions in store
+bfc3461 | 2025-09-26 11:04:08 +0000 | feat: expose snapshots and inserts
+74f1411 | 2025-09-26 11:04:08 +0000 | feat: apply ops via store
+4e42ce1 | 2025-09-26 11:04:08 +0000 | feat: introduce in-memory doc store
+91e9be1 | 2025-09-26 11:04:08 +0000 | feat: replay remote ops
+81c009a | 2025-09-26 11:04:08 +0000 | feat: support local deletes
+34ca374 | 2025-09-26 11:04:08 +0000 | feat: allow local inserts
+85b06df | 2025-09-26 11:04:07 +0000 | feat: sketch text crdt
+9c138a0 | 2025-09-26 11:04:07 +0000 | chore: create services package
+91d4979 | 2025-09-26 11:04:07 +0000 | feat: expose read doc endpoint
+b90d412 | 2025-09-26 11:04:07 +0000 | feat: implement create doc endpoint
+ffd5499 | 2025-09-26 11:04:07 +0000 | feat: mount v1 api router
+ab2f0ca | 2025-09-26 11:04:07 +0000 | feat: stub api router
+515dcb9 | 2025-09-26 11:04:07 +0000 | feat: wire cors and readiness
+2031bc1 | 2025-09-26 11:04:06 +0000 | feat: boot fastapi app with health check
+ab3efea | 2025-09-26 11:04:06 +0000 | chore: create rt_collab package
+702bc32 | 2025-09-26 11:04:06 +0000 | docs: document full env sample
+0322858 | 2025-09-26 11:04:06 +0000 | chore: add service connection envs
+d91e4de | 2025-09-26 11:04:06 +0000 | chore: seed env defaults
+3e2879d | 2025-09-26 11:04:06 +0000 | chore: add redis service
+846c6b2 | 2025-09-26 11:04:06 +0000 | chore: configure mysql credentials
+2692be0 | 2025-09-26 11:04:06 +0000 | chore: scaffold docker compose
+8dec412 | 2025-09-26 11:04:05 +0000 | test: include hypothesis
+ae8fd14 | 2025-09-26 11:04:05 +0000 | test: add pytest dependency
+a8fc57e | 2025-09-26 11:04:05 +0000 | chore: add typing extensions
+c5a63ac | 2025-09-26 11:04:05 +0000 | chore: add ujson alternative
+27572ae | 2025-09-26 11:04:05 +0000 | chore: include orjson for fast responses
+477c219 | 2025-09-26 11:04:05 +0000 | chore: load env files with python-dotenv
+55d64cb | 2025-09-26 11:04:05 +0000 | chore: pull in redis client
+46e50eb | 2025-09-26 11:04:05 +0000 | chore: add aiomysql driver
+cfed780 | 2025-09-26 11:04:04 +0000 | chore: include sqlalchemy async
+50a70c4 | 2025-09-26 11:04:04 +0000 | chore: add pydantic runtime
+1caea8e | 2025-09-26 11:04:04 +0000 | chore: expand server dependencies
+a677f64 | 2025-09-26 11:04:04 +0000 | chore: declare initial dependency
+aaaa056 | 2025-09-26 11:04:04 +0000 | chore: bootstrap project docs
+ec46ad4 | 2025-09-26 10:00:00 +0530 | chore: declare initial dependency
+2f5455b | 2025-09-25 10:00:00 +0530 | chore: bootstrap project docs
