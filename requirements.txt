@@ -5,3 +5,4 @@ sqlalchemy>=2.0
 aiomysql>=0.2
 redis>=5.0
 python-dotenv>=1.0
+orjson>=3.9
