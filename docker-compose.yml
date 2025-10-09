@@ -4,5 +4,8 @@ services:
     image: mysql:8
     environment:
       MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: rt_collab
+      MYSQL_USER: "brajesh350194"
+      MYSQL_PASSWORD: "Beast@5uuu"
     ports:
       - "3306:3306"
