@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from rt_collab.api.routes import router as api_router
+
 app = FastAPI(title="rt-collab")
 app.add_middleware(
     CORSMiddleware,
@@ -9,6 +11,8 @@ app.add_middleware(
     allow_methods=["*"] ,
     allow_headers=["*"],
 )
+
+app.include_router(api_router)
 
 
 @app.get("/healthz")
