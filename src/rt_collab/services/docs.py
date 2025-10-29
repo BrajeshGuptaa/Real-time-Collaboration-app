@@ -34,3 +34,9 @@ class InMemoryDocStore:
         op = doc.crdt.local_insert(index, text)
         doc.version += 1
         return op, doc.version, doc.crdt.to_string()
+
+    async def local_delete(self, doc_id: uuid.UUID, index: int, length: int) -> tuple[dict, int, str]:
+        doc = await self.get_or_create(doc_id)
+        op = doc.crdt.local_delete(index, length)
+        doc.version += 1
+        return op, doc.version, doc.crdt.to_string()
