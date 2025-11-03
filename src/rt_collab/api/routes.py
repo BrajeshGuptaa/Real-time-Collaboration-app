@@ -3,10 +3,9 @@ import uuid
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from rt_collab.services.docs import InMemoryDocStore
+from rt_collab.services.docs import store
 
 router = APIRouter(prefix="/v1")
-store = InMemoryDocStore()
 
 
 class CreateDocRequest(BaseModel):
