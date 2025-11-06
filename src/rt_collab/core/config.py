@@ -4,6 +4,13 @@ from typing import List
 
 from pydantic import BaseModel
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except Exception:
+    pass
+
 
 class Settings(BaseModel):
     app_name: str = os.getenv("APP_NAME", "rt-collab")
@@ -23,5 +30,6 @@ class Settings(BaseModel):
     snapshot_interval: int = int(os.getenv("SNAPSHOT_INTERVAL", "100"))
 
 
+@lru_cache
 def get_settings() -> Settings:
     return Settings()
