@@ -1,14 +1,15 @@
+from __future__ import annotations
+
 import os
 from functools import lru_cache
 from typing import List
 
 from pydantic import BaseModel
-
 try:
     from dotenv import load_dotenv
-
     load_dotenv()
 except Exception:
+    # .env loading is optional; ignore if dotenv is unavailable
     pass
 
 

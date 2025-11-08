@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RT Collab Demo</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 20px; }
+      .row { margin-bottom: 12px; }
+      label { display: inline-block; min-width: 90px; }
+      textarea { width: 100%; height: 40vh; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; }
+      #status { font-size: 12px; color: #666; }
+      #log { height: 20vh; overflow: auto; background: #fafafa; border: 1px solid #eee; padding: 8px; font-size: 12px; }
+      button { padding: 6px 10px; }
+      input[type=text] { width: 360px; }
+    </style>
+  </head>
+  <body>
+    <h2>Real-Time Collaboration (Demo)</h2>
+    <div class="row">
+      <label>Doc ID</label>
+      <input id="docId" type="text" placeholder="auto or paste an existing UUID" />
+      <button id="btnCreate">Create</button>
+      <button id="btnConnect">Connect</button>
+      <span id="status"></span>
+    </div>
+    <div class="row">
+      <textarea id="editor" placeholder="Start typing after Connect..."></textarea>
+    </div>
+    <div class="row">
+      <div id="log"></div>
+    </div>
+    <script src="main.js"></script>
+  </body>
+  </html>
