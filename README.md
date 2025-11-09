@@ -1,44 +1,53 @@
-Real-Time Collaboration Backend (Google Docs–style)
+Real-Time Collaboration Backend
 
-Overview
-- FastAPI server with WebSocket for live ops and presence
-- Minimal CRDT (Logoot/LSEQ-like) for text inserts/deletes
-- Postgres (documents, ops) and Redis (presence/pubsub) scaffolding
-- Health/ready endpoints and basic configuration via environment
+A FastAPI service that supports Google Docs–style collaboration with live CRDT ops, a WebSocket channel for presence, and a tiny demo UI served from `/ui`.
 
-Quick Start
-1) Install deps: `python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`
-2) Start infra (optional): `docker compose up -d` (MySQL + Redis)
-3) Run API: `PYTHONPATH=app/src uvicorn rt_collab.main:app --reload`
-4) Open docs: http://localhost:8000/docs
+## Stack
+- FastAPI + WebSockets for HTTP and realtime
+- Logoot/LSEQ-like CRDT for text inserts/deletes
+- MySQL (documents/ops) and Redis (presence/pubsub) via docker compose
+- SQLAlchemy (async), Pydantic settings, CORS enabled
 
-Environment
-- `DATABASE_URL` (async): e.g. `mysql+aiomysql://brajesh350194:Beast%405uuu@localhost:3306/rt_collab`
-- `REDIS_URL`: default redis://localhost:6379/0
-- `ALLOWED_ORIGINS`: comma-separated; default http://localhost:3000
+## Prerequisites
+- Python 3.11+
+- Docker + Docker Compose (for MySQL/Redis)
 
-Endpoints
-- REST
-  - POST /v1/docs             → create document
-  - GET  /v1/docs/{doc_id}    → fetch snapshot text and version
-  - GET  /healthz, /readyz    → health checks
-- WebSocket
-  - /v1/ws/docs/{doc_id}
-    - Client → server: op.submit, cursor.update
-    - Server → client: op.broadcast, presence.sync, ack/nack
+## Quick start
+```bash
+cd app
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 
-Notes
-- If your MySQL password contains special characters, URL-encode them (e.g., `@` → `%40`).
-- CRDT is a compact Logoot-like sequence with positional identifiers; suitable for demo and tests.
-- Persistence is scaffolded with SQLAlchemy; defaults now target MySQL (async via aiomysql). Add Alembic/migrations for production.
-- Presence uses in-memory manager by default; Redis is supported and configured in docker-compose.
+# Start MySQL + Redis (runs in background)
+docker compose up -d
 
+# Run API with reload
+PYTHONPATH=app/src uvicorn rt_collab.main:app --reload
+```
+- API docs: http://localhost:8000/docs  
+- Demo UI: http://localhost:8000/ui/ (served from `web/`)
 
+Stop services: `docker compose down` (data persists via the `mysqldata` volume).
 
+## Configuration
+Set via environment variables (works with a `.env` file):
+- `DATABASE_URL` (async MySQL): `mysql+aiomysql://USER:PASSWORD@localhost:3306/rt_collab`
+- `REDIS_URL`: `redis://localhost:6379/0` by default
+- `ALLOWED_ORIGINS`: comma-separated list for CORS; default `http://localhost:3000`
+- `APP_NAME`, `APP_VERSION`, `LOG_LEVEL`, `SNAPSHOT_INTERVAL`
 
-### Suggested Next Steps
+Tip: URL-encode special characters in passwords (e.g., `@` -> `%40`).
 
-Ship persistence and auth end-to-end, backed by automated tests.
-Build multi-user UI features (presence indicators, version history, comments).
-Add deployment/observability infrastructure (Docker images, k8s manifests, metrics dashboards, alerts).
-Document architecture, scaling assumptions, and testing strategy to make the project review-ready.
+## Endpoints
+- REST: `POST /v1/docs` (create), `GET /v1/docs/{doc_id}` (snapshot), `/healthz`, `/readyz`
+- WebSocket: `/v1/ws/docs/{doc_id}`  
+  - Client -> server: `op.submit`, `edit.insert`, `edit.delete`, `cursor.update`  
+  - Server -> client: `ack`, `doc.update`, `presence.cursor`, `snapshot`, `nack`
+
+## Testing
+```bash
+cd app
+source .venv/bin/activate
+pytest
+```

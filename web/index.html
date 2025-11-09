@@ -3,33 +3,237 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-store" />
     <title>RT Collab Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 20px; }
-      .row { margin-bottom: 12px; }
-      label { display: inline-block; min-width: 90px; }
-      textarea { width: 100%; height: 40vh; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; }
-      #status { font-size: 12px; color: #666; }
-      #log { height: 20vh; overflow: auto; background: #fafafa; border: 1px solid #eee; padding: 8px; font-size: 12px; }
-      button { padding: 6px 10px; }
-      input[type=text] { width: 360px; }
+      :root {
+        --bg: #0b1220;
+        --panel: rgba(15, 23, 42, 0.78);
+        --muted: #a3b6dd;
+        --text: #e5ecff;
+        --accent: #7de2d1;
+        --accent-strong: #3dd6d0;
+        --border: rgba(255,255,255,0.08);
+        --border-strong: rgba(255,255,255,0.16);
+        --shadow: 0 14px 60px rgba(0,0,0,0.35);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 32px;
+        font-family: "Space Grotesk", "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 10% 20%, rgba(61,214,208,0.12), transparent 30%),
+          radial-gradient(circle at 85% 10%, rgba(125,226,209,0.12), transparent 35%),
+          linear-gradient(135deg, #0b1220 0%, #0d1628 50%, #0b1220 100%);
+        min-height: 100vh;
+      }
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        font-size: 28px;
+        margin: 0;
+        letter-spacing: -0.5px;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .glow {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 12px var(--accent);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--border-strong);
+        background: rgba(255,255,255,0.06);
+        color: var(--text);
+        font-size: 14px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--muted);
+        box-shadow: 0 0 0 4px rgba(142,160,194,0.1);
+      }
+      .status-connected { color: #10b981; }
+      .status-connected .dot { background: #10b981; box-shadow: 0 0 0 6px rgba(16,185,129,0.12); }
+      .status-connecting { color: var(--accent-strong); }
+      .status-connecting .dot { background: var(--accent-strong); box-shadow: 0 0 0 6px rgba(34,211,238,0.12); }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border-strong);
+        border-radius: 20px;
+        padding: 18px 18px 22px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(8px);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 16px;
+        margin-top: 12px;
+      }
+      .stack { display: flex; flex-direction: column; gap: 12px; }
+      label {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      input, textarea, button {
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(11, 19, 36, 0.9);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 14px;
+      }
+      input, textarea {
+        width: 100%;
+        padding: 12px 14px;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+      }
+      input:focus, textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(125,211,252,0.15);
+      }
+      textarea {
+        min-height: 320px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 15px;
+        line-height: 1.5;
+        resize: vertical;
+      }
+      .controls {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      button {
+        cursor: pointer;
+        padding: 12px 14px;
+        font-weight: 600;
+        background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+        color: #0a0f1a;
+        border: none;
+        transition: transform 120ms ease, box-shadow 120ms ease;
+        box-shadow: 0 14px 30px rgba(61,214,208,0.25);
+      }
+      button:active { transform: translateY(1px); }
+      button.secondary {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+        box-shadow: none;
+      }
+      .meta {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .chip {
+        padding: 8px 12px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid var(--border-strong);
+        color: var(--text);
+        font-weight: 500;
+      }
+      #log {
+        height: 340px;
+        overflow: auto;
+        border-radius: 12px;
+        background: #0b1324;
+        border: 1px solid var(--border);
+        padding: 12px;
+        font-size: 13px;
+        line-height: 1.45;
+        color: #c7d4f3;
+      }
+      #log .time { color: var(--muted); margin-right: 8px; }
+      .hint { color: var(--muted); font-size: 13px; margin-top: 4px; }
+      @media (max-width: 960px) {
+        body { padding: 20px; }
+        .grid { grid-template-columns: 1fr; }
+        header { flex-direction: column; align-items: flex-start; }
+      }
     </style>
   </head>
   <body>
-    <h2>Real-Time Collaboration (Demo)</h2>
-    <div class="row">
-      <label>Doc ID</label>
-      <input id="docId" type="text" placeholder="auto or paste an existing UUID" />
-      <button id="btnCreate">Create</button>
-      <button id="btnConnect">Connect</button>
-      <span id="status"></span>
-    </div>
-    <div class="row">
-      <textarea id="editor" placeholder="Start typing after Connect..."></textarea>
-    </div>
-    <div class="row">
-      <div id="log"></div>
-    </div>
+    <main>
+      <header>
+        <div>
+          <div class="eyebrow"><span class="glow"></span> Live CRDT playground</div>
+          <h1>Realtime Doc Playground</h1>
+          <div class="meta">
+            <span class="chip">REST: /v1/docs</span>
+            <span class="chip">WS: /v1/ws/docs/{id}</span>
+            <span class="chip">CRDT demo</span>
+          </div>
+        </div>
+        <span id="status" class="pill"><span class="dot"></span><span id="statusText">Disconnected</span></span>
+      </header>
+
+      <div class="panel stack">
+        <div class="controls">
+          <div style="flex:1; min-width: 260px;">
+            <label for="docId">Document ID</label>
+            <input id="docId" type="text" placeholder="Create or paste an existing UUID" />
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap: wrap;">
+            <button id="btnCreate" type="button">Create</button>
+            <button id="btnConnect" type="button" class="secondary">Connect</button>
+          </div>
+        </div>
+        <div class="meta">
+          <span>Active doc:</span>
+          <span id="activeDoc" class="chip">None</span>
+          <span id="endpoint" class="hint"></span>
+        </div>
+        <div class="grid">
+          <div class="stack">
+            <label for="editor">Editor (broadcasts ops)</label>
+            <textarea id="editor" placeholder="Connect, then start typing to broadcast inserts/deletes..."></textarea>
+          </div>
+          <div class="stack">
+            <label>Event log</label>
+            <div id="log"></div>
+            <div class="hint">Shows WebSocket events, ACK/NACK, snapshots, and errors.</div>
+          </div>
+        </div>
+      </div>
+    </main>
     <script src="main.js"></script>
   </body>
-  </html>
+</html>
