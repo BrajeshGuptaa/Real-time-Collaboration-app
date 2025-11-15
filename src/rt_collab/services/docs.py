@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import uuid
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Dict, Optional
 
 from rt_collab.services.crdt import TextCRDT
@@ -12,6 +13,8 @@ from rt_collab.services.crdt import TextCRDT
 class DocState:
     crdt: TextCRDT
     version: int = 0  # monotonically increasing with each op batch applied
+    ops_applied: int = 0
+    last_activity: datetime | None = None
 
 
 class InMemoryDocStore:
@@ -33,6 +36,8 @@ class InMemoryDocStore:
         doc = await self.get_or_create(doc_id)
         doc.crdt.apply(op_batch)
         doc.version += 1
+        doc.ops_applied += 1
+        doc.last_activity = datetime.utcnow()
         return doc.version
 
     async def snapshot_text(self, doc_id: uuid.UUID) -> tuple[str, int]:
@@ -43,6 +48,8 @@ class InMemoryDocStore:
         doc = await self.get_or_create(doc_id)
         op = doc.crdt.local_insert(index, text)
         doc.version += 1
+        doc.ops_applied += 1
+        doc.last_activity = datetime.utcnow()
         new_text = doc.crdt.to_string()
         return op, doc.version, new_text
 
@@ -50,8 +57,23 @@ class InMemoryDocStore:
         doc = await self.get_or_create(doc_id)
         op = doc.crdt.local_delete(index, length)
         doc.version += 1
+        doc.ops_applied += 1
+        doc.last_activity = datetime.utcnow()
         new_text = doc.crdt.to_string()
         return op, doc.version, new_text
+
+    async def stats(self, doc_id: uuid.UUID) -> dict:
+        doc = await self.get_or_create(doc_id)
+        return {
+            "version": doc.version,
+            "ops_applied": doc.ops_applied,
+            "length": len(doc.crdt.to_string()),
+            "last_activity": doc.last_activity,
+        }
+
+    async def reset(self) -> None:
+        async with self._lock:
+            self._docs = {}
 
 
 store = InMemoryDocStore()
