@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, Optional
 
+from rt_collab.core.config import get_settings
+from rt_collab.services.task_queue import task_queue
 from rt_collab.services.crdt import TextCRDT
 
 
@@ -38,6 +40,7 @@ class InMemoryDocStore:
         doc.version += 1
         doc.ops_applied += 1
         doc.last_activity = datetime.utcnow()
+        await self._maybe_enqueue_snapshot(doc_id, doc.version)
         return doc.version
 
     async def snapshot_text(self, doc_id: uuid.UUID) -> tuple[str, int]:
@@ -51,6 +54,7 @@ class InMemoryDocStore:
         doc.ops_applied += 1
         doc.last_activity = datetime.utcnow()
         new_text = doc.crdt.to_string()
+        await self._maybe_enqueue_snapshot(doc_id, doc.version)
         return op, doc.version, new_text
 
     async def local_delete(self, doc_id: uuid.UUID, index: int, length: int) -> tuple[dict, int, str]:
@@ -60,6 +64,7 @@ class InMemoryDocStore:
         doc.ops_applied += 1
         doc.last_activity = datetime.utcnow()
         new_text = doc.crdt.to_string()
+        await self._maybe_enqueue_snapshot(doc_id, doc.version)
         return op, doc.version, new_text
 
     async def stats(self, doc_id: uuid.UUID) -> dict:
@@ -78,6 +83,19 @@ class InMemoryDocStore:
     async def list_doc_ids(self) -> list[uuid.UUID]:
         async with self._lock:
             return list(self._docs.keys())
+
+    async def _maybe_enqueue_snapshot(self, doc_id: uuid.UUID, version: int) -> None:
+        settings = get_settings()
+        if settings.snapshot_interval <= 0:
+            return
+        if version % settings.snapshot_interval != 0:
+            return
+        idem = f"snapshot-{doc_id}-{version}"
+        await task_queue.enqueue(
+            "snapshot.create",
+            {"doc_id": str(doc_id), "version": version},
+            idempotency_key=idem,
+        )
 
 
 store = InMemoryDocStore()
