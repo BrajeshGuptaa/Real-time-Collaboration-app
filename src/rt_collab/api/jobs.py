@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from typing import Any, Dict
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from rt_collab.services.task_queue import Job, task_queue
@@ -35,6 +35,7 @@ class JobResponse(BaseModel):
     attempts: int
     max_attempts: int
     idempotency_key: str | None
+    request_id: str | None
     enqueued_at: datetime
     next_run_at: datetime
     result: Dict[str, Any] | None
@@ -49,6 +50,7 @@ def _serialize_job(job: Job) -> Dict[str, Any]:
         "attempts": job.attempts,
         "max_attempts": job.max_attempts,
         "idempotency_key": job.idempotency_key,
+        "request_id": job.request_id,
         "enqueued_at": job.enqueued_at,
         "next_run_at": job.next_run_at,
         "result": job.result,
@@ -57,7 +59,7 @@ def _serialize_job(job: Job) -> Dict[str, Any]:
 
 
 @router.post("/jobs", response_model=JobResponse)
-async def create_job(req: JobCreateRequest) -> Any:
+async def create_job(req: JobCreateRequest, request: Request) -> Any:
     if req.type not in ALLOWED_JOB_TYPES:
         raise HTTPException(status_code=400, detail="unsupported_type")
     job = await task_queue.enqueue(
@@ -65,6 +67,7 @@ async def create_job(req: JobCreateRequest) -> Any:
         req.payload,
         idempotency_key=req.idempotency_key,
         max_attempts=req.max_attempts,
+        request_id=getattr(request.state, "request_id", None),
     )
     return _serialize_job(job)
 
