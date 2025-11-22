@@ -191,5 +191,13 @@ class TaskQueue:
     def all_jobs(self) -> Dict[uuid.UUID, Job]:
         return dict(self._jobs)
 
+    async def reset(self) -> None:
+        async with self._lock:
+            self._jobs = {}
+            self._idempotency = {}
+            self._pending = []
+        self.metrics = QueueMetrics()
+        self._wake.clear()
+
 
 task_queue = TaskQueue()
