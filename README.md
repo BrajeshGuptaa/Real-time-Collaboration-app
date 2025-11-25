@@ -13,7 +13,7 @@ Real-time document editing with asynchronous background orchestration. It keeps 
 - Python 3.11+
 - Docker + Docker Compose (for MySQL/Redis)
 
-## Quick start
+## Quick start (hosted app, compose for DBs)
 ```bash
 cd app
 python -m venv .venv
@@ -21,7 +21,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 # Start MySQL + Redis (runs in background)
-docker compose up -d
+docker compose up -d mysql redis
 
 # Run API with reload
 PYTHONPATH=app/src uvicorn rt_collab.main:app --reload
@@ -30,6 +30,29 @@ PYTHONPATH=app/src uvicorn rt_collab.main:app --reload
 - Demo UI: http://localhost:8000/ui/ (served from `web/`)
 
 Stop services: `docker compose down` (data persists via the `mysqldata` volume).
+
+## Run everything with Docker Compose
+From `app/`:
+```bash
+docker compose up --build
+```
+- App available at http://localhost:8000 (UI at `/ui`)
+- Services: FastAPI app, MySQL, Redis (with healthchecks)
+Stop: `docker compose down` (data persists in `mysqldata` volume).
+
+## Using the demo UI
+1) Start the app (local `uvicorn` or `docker compose up --build`).
+2) Open http://localhost:8000/ui/.
+3) Click “Create” to generate a doc ID, then “Connect”.
+4) Type in the editor; inserts/deletes stream over WebSocket and appear in the Event log.
+5) To return later, paste the same doc ID and click “Connect”.
+
+## Hitting the APIs directly
+- Create doc: `POST /v1/docs`
+- Snapshot: `GET /v1/docs/{doc_id}`
+- WebSocket: `/v1/ws/docs/{doc_id}` (send `edit.insert`/`edit.delete`/`cursor.update`)
+- Async jobs: `POST /v1/jobs`, `GET /v1/jobs/{id}`, exports at `POST /v1/docs/{doc_id}/export`
+- Health/metrics: `/healthz`, `/readyz`, `/metrics`
 
 ## Configuration
 Set via environment variables (works with a `.env` file):
