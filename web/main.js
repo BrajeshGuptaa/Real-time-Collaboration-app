@@ -20,8 +20,8 @@
   let suppressLocal = false;
   let lastText = "";
   const setActiveDoc = (id) => {
-    if (!id) return;
-    activeDoc.textContent = id;
+    const val = (id || "").trim();
+    activeDoc.textContent = val || "None";
   };
 
   function setStatus(state, text) {
@@ -96,9 +96,10 @@
     try {
       const res = await fetch('/v1/docs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: 'Untitled' }) });
       const data = await res.json();
-      docIdInput.value = data.id;
-      setActiveDoc(data.id);
-      localStorage.setItem(LAST_DOC_KEY, data.id);
+      const newId = String(data.id || "").trim();
+      docIdInput.value = newId;
+      setActiveDoc(newId);
+      localStorage.setItem(LAST_DOC_KEY, newId);
       addLog({ create: data });
     } catch (e) {
       addLog({ error: 'create_failed', details: String(e) });
@@ -145,12 +146,13 @@
   // Restore last doc id if present
   const storedDoc = localStorage.getItem(LAST_DOC_KEY);
   if (storedDoc) {
-    docIdInput.value = storedDoc;
-    setActiveDoc(storedDoc);
+    const val = String(storedDoc || "").trim();
+    docIdInput.value = val;
+    setActiveDoc(val);
   }
   docIdInput.addEventListener("input", () => {
     const val = docIdInput.value.trim();
-    setActiveDoc(val || "None");
+    setActiveDoc(val);
   });
 
   // Collapsible how-to
