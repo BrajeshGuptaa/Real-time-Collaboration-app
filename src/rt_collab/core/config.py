@@ -4,7 +4,7 @@ import os
 from functools import lru_cache
 from typing import List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -14,21 +14,23 @@ except Exception:
 
 
 class Settings(BaseModel):
-    app_name: str = os.getenv("APP_NAME", "rt-collab")
-    app_version: str = os.getenv("APP_VERSION", "0.1.0")
+    app_name: str = Field(default_factory=lambda: os.getenv("APP_NAME", "rt-collab"))
+    app_version: str = Field(default_factory=lambda: os.getenv("APP_VERSION", "0.1.0"))
 
-    database_url: str = os.getenv(
-        "DATABASE_URL",
-        "mysql+aiomysql://root:password@localhost:3306/rt_collab",
+    database_url: str = Field(
+        default_factory=lambda: os.getenv(
+            "DATABASE_URL",
+            "mysql+aiomysql://root:password@localhost:3306/rt_collab",
+        )
     )
-    redis_url: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    redis_url: str = Field(default_factory=lambda: os.getenv("REDIS_URL", "redis://localhost:6379/0"))
 
-    allowed_origins: List[str] = (
-        os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+    allowed_origins: List[str] = Field(
+        default_factory=lambda: os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
     )
-    log_level: str = os.getenv("LOG_LEVEL", "INFO")
+    log_level: str = Field(default_factory=lambda: os.getenv("LOG_LEVEL", "INFO"))
 
-    snapshot_interval: int = int(os.getenv("SNAPSHOT_INTERVAL", "100"))
+    snapshot_interval: int = Field(default_factory=lambda: int(os.getenv("SNAPSHOT_INTERVAL", "100")))
 
 
 @lru_cache
