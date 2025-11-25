@@ -60,6 +60,7 @@
     if (ws) { ws.close(); ws = null; }
     const url = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/v1/ws/docs/${docId}`;
     ws = new WebSocket(url);
+    setActiveDoc(docId);
     setStatus("connecting", "Connecting...");
     ws.onopen = () => setStatus("connected", "Connected");
     ws.onclose = () => setStatus("disconnected", "Disconnected");
@@ -149,6 +150,8 @@
     const val = String(storedDoc || "").trim();
     docIdInput.value = val;
     setActiveDoc(val);
+  } else if (docIdInput.value.trim()) {
+    setActiveDoc(docIdInput.value.trim());
   }
   docIdInput.addEventListener("input", () => {
     const val = docIdInput.value.trim();
