@@ -10,10 +10,19 @@
   const statusText = $("statusText");
   const activeDoc = $("activeDoc");
   const endpoint = $("endpoint");
+  const howToToggle = $("howToToggle");
+  const howToContent = $("howToContent");
+  const howToPanel = howToContent ? howToContent.parentElement : null;
+
+  const LAST_DOC_KEY = "rtc_last_doc_id";
 
   let ws = null;
   let suppressLocal = false;
   let lastText = "";
+  const setActiveDoc = (id) => {
+    if (!id) return;
+    activeDoc.textContent = id;
+  };
 
   function setStatus(state, text) {
     statusText.textContent = text || state;
@@ -88,7 +97,8 @@
       const res = await fetch('/v1/docs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: 'Untitled' }) });
       const data = await res.json();
       docIdInput.value = data.id;
-      activeDoc.textContent = data.id;
+      setActiveDoc(data.id);
+      localStorage.setItem(LAST_DOC_KEY, data.id);
       addLog({ create: data });
     } catch (e) {
       addLog({ error: 'create_failed', details: String(e) });
@@ -98,7 +108,8 @@
   btnConnect.onclick = () => {
     const docId = (docIdInput.value || '').trim();
     if (!docId) { alert('Enter a document ID or click Create'); return; }
-    activeDoc.textContent = docId;
+    setActiveDoc(docId);
+    localStorage.setItem(LAST_DOC_KEY, docId);
     connect(docId);
   };
 
@@ -130,4 +141,31 @@
 
   // Show endpoint info on load
   endpoint.textContent = `Target: ${location.origin}`;
+
+  // Restore last doc id if present
+  const storedDoc = localStorage.getItem(LAST_DOC_KEY);
+  if (storedDoc) {
+    docIdInput.value = storedDoc;
+    setActiveDoc(storedDoc);
+  }
+  docIdInput.addEventListener("input", () => {
+    const val = docIdInput.value.trim();
+    setActiveDoc(val || "None");
+  });
+
+  // Collapsible how-to
+  if (howToToggle && howToContent) {
+    howToToggle.addEventListener("click", () => {
+      const isHidden = howToContent.classList.contains("collapsed");
+      if (isHidden) {
+        howToContent.classList.remove("collapsed");
+        howToToggle.textContent = "Hide";
+        if (howToPanel) howToPanel.classList.remove("collapsed");
+      } else {
+        howToContent.classList.add("collapsed");
+        howToToggle.textContent = "Show";
+        if (howToPanel) howToPanel.classList.add("collapsed");
+      }
+    });
+  }
 })();

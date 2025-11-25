@@ -195,6 +195,7 @@
         color: var(--text);
         font-weight: 500;
       }
+      .collapsed { display: none; }
       #log {
         height: 340px;
         overflow: auto;
@@ -229,6 +230,20 @@
         </div>
         <span id="status" class="pill"><span class="dot"></span><span id="statusText">Disconnected</span></span>
       </header>
+
+      <div class="panel" style="margin-bottom: 14px;">
+        <div style="display:flex; align-items:center; gap:10px; justify-content:space-between;">
+          <div style="font-weight:600;">How to use</div>
+          <button id="howToToggle" type="button" class="secondary" style="padding:8px 12px; font-size:13px;">Hide</button>
+        </div>
+        <div id="howToContent" class="meta" style="margin-top:8px;">
+          <span class="chip">1) Click Create to get a doc ID.</span>
+          <span class="chip">2) Hit Connect to join that doc.</span>
+          <span class="chip">3) Type in the editor; changes stream live.</span>
+          <span class="chip">4) Share the doc ID with a teammate—they connect to the same ID to collaborate in realtime.</span>
+          <span class="chip">5) We remember your last doc ID; reopen by clicking Connect.</span>
+        </div>
+      </div>
 
       <div class="panel stack">
         <div class="controls">
