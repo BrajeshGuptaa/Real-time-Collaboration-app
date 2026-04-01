@@ -43,6 +43,40 @@
     log.scrollTop = log.scrollHeight;
   }
 
+  function setEditorText(nextText, { preserveSelection = false } = {}) {
+    const text = typeof nextText === "string" ? nextText : "";
+    if (editor.value === text) {
+      lastText = text;
+      return;
+    }
+
+    const active = document.activeElement === editor;
+    const prevText = editor.value;
+    const prevStart = editor.selectionStart ?? prevText.length;
+    const prevEnd = editor.selectionEnd ?? prevText.length;
+    const prefix = lcp(prevText, text);
+    const suffix = lcs(prevText.slice(prefix), text.slice(prefix));
+    const prevMidLen = prevText.length - prefix - suffix;
+    const nextMidLen = text.length - prefix - suffix;
+
+    editor.value = text;
+    lastText = text;
+
+    if (!preserveSelection || !active) return;
+
+    const adjustIndex = (index) => {
+      if (index <= prefix) return index;
+      if (index >= prefix + prevMidLen) {
+        return Math.max(prefix, index - prevMidLen + nextMidLen);
+      }
+      return prefix + nextMidLen;
+    };
+
+    const nextStart = Math.min(text.length, Math.max(0, adjustIndex(prevStart)));
+    const nextEnd = Math.min(text.length, Math.max(nextStart, adjustIndex(prevEnd)));
+    editor.setSelectionRange(nextStart, nextEnd);
+  }
+
   function lcp(a, b) {
     const minLen = Math.min(a.length, b.length);
     let i = 0;
@@ -70,22 +104,19 @@
       try { data = JSON.parse(ev.data); } catch { return; }
       if (data.type === 'snapshot') {
         suppressLocal = true;
-        editor.value = data.text || "";
-        lastText = editor.value;
+        setEditorText(data.text || "");
         setTimeout(() => (suppressLocal = false), 0);
         addLog({ snapshot: { version: data.version } });
       } else if (data.type === 'doc.update') {
         suppressLocal = true;
-        editor.value = data.text || "";
-        lastText = editor.value;
+        setEditorText(data.text || "", { preserveSelection: true });
         setTimeout(() => (suppressLocal = false), 0);
       } else if (data.type === 'ack') {
-        // keep editor in sync with authoritative text if provided
-        if (typeof data.text === 'string') {
-          suppressLocal = true;
-          editor.value = data.text;
-          lastText = editor.value;
-          setTimeout(() => (suppressLocal = false), 0);
+        // Do not overwrite local text from ACKs.
+        // ACKs can arrive after newer keystrokes and would revert the editor
+        // back to stale server text, which feels like input lag or broken caret behavior.
+        if (typeof data.text === 'string' && data.text === editor.value) {
+          lastText = data.text;
         }
       } else if (data.type === 'nack') {
         addLog({ nack: data });
